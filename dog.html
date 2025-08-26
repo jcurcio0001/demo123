@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dog Runner Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #cce7ff;
+    }
+    #game {
+      position: relative;
+      width: 600px;
+      height: 200px;
+      border: 2px solid #333;
+      background: #a8d08d;
+      overflow: hidden;
+    }
+    #dog {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      font-size: 40px;
+    }
+    .obstacle {
+      position: absolute;
+      bottom: 20px;
+      right: 0;
+      font-size: 40px;
+    }
+    #score {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="score">Score: 0</div>
+    <div id="dog">🐕</div>
+  </div>
+
+  <script>
+    const game = document.getElementById('game');
+    const dog = document.getElementById('dog');
+    const scoreDisplay = document.getElementById('score');
+    let jumping = false;
+    let score = 0;
+
+    // Jump on spacebar
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' && !jumping) {
+        jump();
+      }
+    });
+
+    function jump() {
+      jumping = true;
+      let jumpHeight = 0;
+      const up = setInterval(() => {
+        if (jumpHeight >= 80) {
+          clearInterval(up);
+          const down = setInterval(() => {
+            if (jumpHeight <= 0) {
+              clearInterval(down);
+              jumping = false;
+            }
+            dog.style.bottom = 20 + jumpHeight + 'px';
+            jumpHeight -= 5;
+          }, 20);
+        }
+        dog.style.bottom = 20 + jumpHeight + 'px';
+        jumpHeight += 5;
+      }, 20);
+    }
+
+    function createObstacle() {
+      const obstacle = document.createElement('div');
+      obstacle.classList.add('obstacle');
+      obstacle.textContent = '🌲';
+      obstacle.style.right = '0px';
+      game.appendChild(obstacle);
+
+      let move = setInterval(() => {
+        let dogRect = dog.getBoundingClientRect();
+        let obsRect = obstacle.getBoundingClientRect();
+
+        // Collision detection
+        if (
+          dogRect.left < obsRect.right &&
+          dogRect.right > obsRect.left &&
+          dogRect.bottom > obsRect.top
+        ) {
+          alert('Game Over! Final Score: ' + score);
+          location.reload();
+        }
+
+        let currentRight = parseInt(obstacle.style.right);
+        if (currentRight > 600) {
+          clearInterval(move);
+          obstacle.remove();
+          score++;
+          scoreDisplay.textContent = 'Score: ' + score;
+        } else {
+          obstacle.style.right = currentRight + 5 + 'px';
+        }
+      }, 20);
+    }
+
+    setInterval(createObstacle, 2000);
+  </script>
+</body>
+</html>
