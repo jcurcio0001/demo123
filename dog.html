@@ -65,7 +65,7 @@
       jumping = true;
       let jumpHeight = 0;
       const up = setInterval(() => {
-        if (jumpHeight >= 80) {
+        if (jumpHeight >= 100) { // jump a little higher
           clearInterval(up);
           const down = setInterval(() => {
             if (jumpHeight <= 0) {
@@ -91,12 +91,14 @@
       let move = setInterval(() => {
         let dogRect = dog.getBoundingClientRect();
         let obsRect = obstacle.getBoundingClientRect();
+        let gameRect = game.getBoundingClientRect();
 
-        // Collision detection
+        // Collision detection (only if dog is low enough)
         if (
           dogRect.left < obsRect.right &&
           dogRect.right > obsRect.left &&
-          dogRect.bottom > obsRect.top
+          dogRect.bottom >= obsRect.top &&
+          dogRect.bottom >= gameRect.bottom - 40 // ensure collision only when dog is low
         ) {
           alert('Game Over! Final Score: ' + score);
           location.reload();
@@ -118,3 +120,4 @@
   </script>
 </body>
 </html>
+
